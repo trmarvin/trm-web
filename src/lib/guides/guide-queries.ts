@@ -1,10 +1,26 @@
 // src/lib/guides/guide-queries.ts
 
-const STRAPI_URL = process.env.STRAPI_URL!;
-const STRAPI_TOKEN = process.env.STRAPI_TOKEN!;
+import {
+  normalizeGuide,
+  normalizeGuideSection,
+  normalizeGuideSeries,
+} from "./guide-normalizers";
+
+const STRAPI_URL = process.env.STRAPI_URL;
+const STRAPI_TOKEN = process.env.STRAPI_TOKEN;
+
+if (!STRAPI_URL) {
+  throw new Error("Missing STRAPI_URL environment variable");
+}
+
+if (!STRAPI_TOKEN) {
+  throw new Error("Missing STRAPI_TOKEN environment variable");
+}
 
 async function strapiFetch(path: string) {
-  const res = await fetch(`${STRAPI_URL}${path}`, {
+  const url = `${STRAPI_URL}${path}`;
+
+  const res = await fetch(url, {
     headers: {
       Authorization: `Bearer ${STRAPI_TOKEN}`,
       "Content-Type": "application/json",
@@ -13,16 +29,19 @@ async function strapiFetch(path: string) {
   });
 
   if (!res.ok) {
-    throw new Error(`Strapi fetch failed: ${res.status} ${res.statusText}`);
+    const body = await res.text();
+    throw new Error(
+      `Strapi fetch failed: ${res.status} ${res.statusText}\nURL: ${url}\nBody: ${body}`,
+    );
   }
 
   return res.json();
 }
 
 export async function getGuidesIndex() {
-  // Replace with your real guides landing query
   return {
     title: "Guides",
+    slug: "guides",
   };
 }
 
@@ -34,18 +53,22 @@ export async function getStandaloneGuideBySlug(slug: string) {
   const item = json?.data?.[0];
   if (!item) return null;
 
-  // Only return standalone guides
-  if (item.series || item.section) return null;
+  const normalized = normalizeGuide(item);
 
-  return item;
+  if (normalized.guide_series || normalized.guide_section) {
+    return null;
+  }
+
+  return normalized;
 }
 
 export async function getGuideSeriesBySlug(seriesSlug: string) {
   const json = await strapiFetch(
-    `/api/guide-series?filters[slug][$eq]=${encodeURIComponent(seriesSlug)}&populate[sections][populate]=*`,
+    `/api/guide-series?filters[slug][$eq]=${encodeURIComponent(seriesSlug)}&populate=*`,
   );
 
-  return json?.data?.[0] ?? null;
+  const item = json?.data?.[0];
+  return item ? normalizeGuideSeries(item) : null;
 }
 
 export async function getGuideSectionByPath(
@@ -53,10 +76,11 @@ export async function getGuideSectionByPath(
   sectionSlug: string,
 ) {
   const json = await strapiFetch(
-    `/api/guide-sections?filters[slug][$eq]=${encodeURIComponent(sectionSlug)}&filters[series][slug][$eq]=${encodeURIComponent(seriesSlug)}&populate[guides][populate]=*`,
+    `/api/guide-sections?filters[slug][$eq]=${encodeURIComponent(sectionSlug)}&filters[guide_series][slug][$eq]=${encodeURIComponent(seriesSlug)}&populate=*`,
   );
 
-  return json?.data?.[0] ?? null;
+  const item = json?.data?.[0];
+  return item ? normalizeGuideSection(item) : null;
 }
 
 export async function getGuideByPath(
@@ -65,8 +89,15 @@ export async function getGuideByPath(
   guideSlug: string,
 ) {
   const json = await strapiFetch(
-    `/api/guides?filters[slug][$eq]=${encodeURIComponent(guideSlug)}&filters[section][slug][$eq]=${encodeURIComponent(sectionSlug)}&filters[series][slug][$eq]=${encodeURIComponent(seriesSlug)}&populate=*`,
+    `/api/guides` +
+      `?filters[slug][$eq]=${encodeURIComponent(guideSlug)}` +
+      `&filters[guide_section][slug][$eq]=${encodeURIComponent(sectionSlug)}` +
+      `&filters[guide_series][slug][$eq]=${encodeURIComponent(seriesSlug)}` +
+      `&populate[guide_series]=true` +
+      `&populate[guide_section]=true` +
+      `&populate[body][on][blocks.paragraph]=true`,
   );
 
-  return json?.data?.[0] ?? null;
+  const item = json?.data?.[0];
+  return item ? normalizeGuide(item) : null;
 }

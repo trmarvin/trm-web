@@ -1,74 +1,78 @@
-// src/lib/guides/build-guide-breadcrumbs.ts
+// src/app/guides/[[...segments]]/page.tsx
 
-export type BreadcrumbItem = {
-  label: string;
-  href: string;
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { resolveGuideRoute } from "@/lib/guides/resolve-guide-route";
+import { buildGuideBreadcrumbs } from "@/lib/guides/build-guide-breadcrumbs";
+
+import { GuidesLandingPage } from "@/components/guides/GuidesLandingPage";
+import { StandaloneGuidePage } from "@/components/guides/StandaloneGuidePage";
+import { GuideSeriesPage } from "@/components/guides/GuideSeriesPage";
+import { GuideSectionPage } from "@/components/guides/GuideSectionPage";
+import { GuidePage } from "@/components/guides/GuidePage";
+
+type PageProps = {
+  params: Promise<{
+    segments?: string[];
+  }>;
 };
 
-type ResolvedGuideRoute =
-  | { type: "guides-index"; data: any }
-  | { type: "standalone-guide"; data: any }
-  | { type: "guide-series"; data: any }
-  | { type: "guide-section"; data: any }
-  | { type: "guide"; data: any };
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { segments = [] } = await params;
+  const resolved = await resolveGuideRoute(segments);
 
-export function buildGuideBreadcrumbs(
-  resolved: ResolvedGuideRoute,
-): BreadcrumbItem[] {
-  const crumbs: BreadcrumbItem[] = [{ label: "Guides", href: "/guides" }];
+  if (!resolved) {
+    return {
+      title: "Not Found",
+    };
+  }
+
+  const title = resolved.data?.seoTitle || resolved.data?.title || "Guides";
+
+  const description =
+    resolved.data?.seoDescription || resolved.data?.description || undefined;
+
+  return {
+    title,
+    description,
+  };
+}
+
+export default async function GuidesRoutePage({ params }: PageProps) {
+  const { segments = [] } = await params;
+  const resolved = await resolveGuideRoute(segments);
+
+  if (!resolved) {
+    notFound();
+  }
+
+  const breadcrumbs = buildGuideBreadcrumbs(resolved);
 
   switch (resolved.type) {
     case "guides-index":
-      return crumbs;
+      return (
+        <GuidesLandingPage data={resolved.data} breadcrumbs={breadcrumbs} />
+      );
 
     case "standalone-guide":
-      crumbs.push({
-        label: resolved.data.title,
-        href: `/guides/${resolved.data.slug}`,
-      });
-      return crumbs;
+      return (
+        <StandaloneGuidePage data={resolved.data} breadcrumbs={breadcrumbs} />
+      );
 
     case "guide-series":
-      crumbs.push({
-        label: resolved.data.title,
-        href: `/guides/${resolved.data.slug}`,
-      });
-      return crumbs;
+      return <GuideSeriesPage data={resolved.data} breadcrumbs={breadcrumbs} />;
 
     case "guide-section":
-      crumbs.push({
-        label: resolved.data.series.title,
-        href: `/guides/${resolved.data.series.slug}`,
-      });
-      crumbs.push({
-        label: resolved.data.title,
-        href: `/guides/${resolved.data.series.slug}/${resolved.data.slug}`,
-      });
-      return crumbs;
+      return (
+        <GuideSectionPage data={resolved.data} breadcrumbs={breadcrumbs} />
+      );
 
     case "guide":
-      if (resolved.data.series) {
-        crumbs.push({
-          label: resolved.data.series.title,
-          href: `/guides/${resolved.data.series.slug}`,
-        });
-      }
+      return <GuidePage data={resolved.data} breadcrumbs={breadcrumbs} />;
 
-      if (resolved.data.series && resolved.data.section) {
-        crumbs.push({
-          label: resolved.data.section.title,
-          href: `/guides/${resolved.data.series.slug}/${resolved.data.section.slug}`,
-        });
-      }
-
-      crumbs.push({
-        label: resolved.data.title,
-        href:
-          resolved.data.series && resolved.data.section
-            ? `/guides/${resolved.data.series.slug}/${resolved.data.section.slug}/${resolved.data.slug}`
-            : `/guides/${resolved.data.slug}`,
-      });
-
-      return crumbs;
+    default:
+      notFound();
   }
 }

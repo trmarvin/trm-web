@@ -22,52 +22,77 @@ export function buildGuideBreadcrumbs(
       return crumbs;
 
     case "standalone-guide":
-      crumbs.push({
-        label: resolved.data.title,
-        href: `/guides/${resolved.data.slug}`,
-      });
+      if (resolved.data?.title && resolved.data?.slug) {
+        crumbs.push({
+          label: resolved.data.title,
+          href: `/guides/${resolved.data.slug}`,
+        });
+      }
       return crumbs;
 
     case "guide-series":
-      crumbs.push({
-        label: resolved.data.title,
-        href: `/guides/${resolved.data.slug}`,
-      });
+      if (resolved.data?.title && resolved.data?.slug) {
+        crumbs.push({
+          label: resolved.data.title,
+          href: `/guides/${resolved.data.slug}`,
+        });
+      }
       return crumbs;
 
     case "guide-section":
-      crumbs.push({
-        label: resolved.data.series.title,
-        href: `/guides/${resolved.data.series.slug}`,
-      });
-      crumbs.push({
-        label: resolved.data.title,
-        href: `/guides/${resolved.data.series.slug}/${resolved.data.slug}`,
-      });
+      if (
+        resolved.data?.guide_series?.title &&
+        resolved.data?.guide_series?.slug
+      ) {
+        crumbs.push({
+          label: resolved.data.guide_series.title,
+          href: `/guides/${resolved.data.guide_series.slug}`,
+        });
+      }
+
+      if (resolved.data?.title && resolved.data?.slug) {
+        crumbs.push({
+          label: resolved.data.title,
+          href: resolved.data?.guide_series?.slug
+            ? `/guides/${resolved.data.guide_series.slug}/${resolved.data.slug}`
+            : "#",
+        });
+      }
+
       return crumbs;
 
     case "guide":
-      if (resolved.data.series) {
+      if (
+        resolved.data?.guide_series?.title &&
+        resolved.data?.guide_series?.slug
+      ) {
         crumbs.push({
-          label: resolved.data.series.title,
-          href: `/guides/${resolved.data.series.slug}`,
+          label: resolved.data.guide_series.title,
+          href: `/guides/${resolved.data.guide_series.slug}`,
         });
       }
 
-      if (resolved.data.series && resolved.data.section) {
+      if (
+        resolved.data?.guide_series?.slug &&
+        resolved.data?.guide_section?.title &&
+        resolved.data?.guide_section?.slug
+      ) {
         crumbs.push({
-          label: resolved.data.section.title,
-          href: `/guides/${resolved.data.series.slug}/${resolved.data.section.slug}`,
+          label: resolved.data.guide_section.title,
+          href: `/guides/${resolved.data.guide_series.slug}/${resolved.data.guide_section.slug}`,
         });
       }
 
-      crumbs.push({
-        label: resolved.data.title,
-        href:
-          resolved.data.series && resolved.data.section
-            ? `/guides/${resolved.data.series.slug}/${resolved.data.section.slug}/${resolved.data.slug}`
-            : `/guides/${resolved.data.slug}`,
-      });
+      if (resolved.data?.title && resolved.data?.slug) {
+        crumbs.push({
+          label: resolved.data.title,
+          href:
+            resolved.data?.guide_series?.slug &&
+            resolved.data?.guide_section?.slug
+              ? `/guides/${resolved.data.guide_series.slug}/${resolved.data.guide_section.slug}/${resolved.data.slug}`
+              : `/guides/${resolved.data.slug}`,
+        });
+      }
 
       return crumbs;
   }
