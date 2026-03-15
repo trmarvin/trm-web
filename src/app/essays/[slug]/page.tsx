@@ -6,9 +6,22 @@ type Essay = {
   id: number;
   title: string;
   slug: string;
-  excerpt?: string | null;
+  excerpt?: any;
   body?: any[];
 };
+
+function blocksToPlainText(blocks: any): string {
+  if (!Array.isArray(blocks)) return "";
+
+  return blocks
+    .map((block) =>
+      Array.isArray(block.children)
+        ? block.children.map((child: any) => child.text || "").join("")
+        : "",
+    )
+    .join(" ")
+    .trim();
+}
 
 export default async function EssayPage({
   params,
@@ -27,12 +40,17 @@ export default async function EssayPage({
     notFound();
   }
 
+  const excerptText =
+    typeof essay.excerpt === "string"
+      ? essay.excerpt
+      : blocksToPlainText(essay.excerpt);
+
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
       <h1 className="mb-3 text-3xl font-semibold">{essay.title}</h1>
 
-      {essay.excerpt ? (
-        <p className="mb-10 text-lg opacity-80">{essay.excerpt}</p>
+      {excerptText ? (
+        <p className="mb-10 text-lg opacity-80">{excerptText}</p>
       ) : null}
 
       <article className="prose max-w-none">

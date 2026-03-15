@@ -5,9 +5,9 @@ import { notFound } from "next/navigation";
 const STRAPI_URL = process.env.STRAPI_URL;
 const STRAPI_TOKEN = process.env.STRAPI_TOKEN;
 
-async function getIdeasPage() {
+async function getPeoplePage() {
   const res = await fetch(
-    `${STRAPI_URL}/api/pages?filters[slug][$eq]=ideas&populate=*`,
+    `${STRAPI_URL}/api/pages?filters[slug][$eq]=people&populate=*`,
     {
       headers: {
         Authorization: `Bearer ${STRAPI_TOKEN}`,
@@ -18,15 +18,15 @@ async function getIdeasPage() {
   );
 
   if (!res.ok) {
-    throw new Error(`Failed to fetch Ideas page: ${res.status}`);
+    throw new Error(`Failed to fetch People page: ${res.status}`);
   }
 
   const json = await res.json();
   return json.data?.[0] ?? null;
 }
 
-export default async function IdeasPage() {
-  const page = await getIdeasPage();
+export default async function PeoplePage() {
+  const page = await getPeoplePage();
 
   if (!page) notFound();
 

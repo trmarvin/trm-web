@@ -11,7 +11,7 @@ export function SiteHeader() {
         <nav className="flex gap-6 text-sm">
           <Link href="/texts">Texts</Link>
           <Link href="/ideas">Ideas</Link>
-          <Link href="/thinkers">Thinkers</Link>
+          <Link href="/people">People</Link>
           <Link href="/history">History</Link>
           <Link href="/about">About</Link>
         </nav>
