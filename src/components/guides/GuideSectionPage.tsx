@@ -1,7 +1,7 @@
 // src/components/guides/GuideSectionPage.tsx
 
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
-import type { BreadcrumbItem } from "@/components/navigation/types";
+import type { BreadcrumbItem } from "@/components/types";
 
 type GuideSectionPageProps = {
   data: {

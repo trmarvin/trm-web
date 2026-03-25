@@ -1,23 +1,17 @@
+import { ContentIndexPage } from "@/components/pages/ContentIndexPage";
 import { getConcepts } from "@/lib/strapi";
-import { ContentCard } from "@/components/lists/ContentCard";
+import type { Concept } from "@/types/content";
 
 export default async function ConceptsPage() {
   const concepts = await getConcepts();
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-16">
-      <h1 className="text-4xl font-semibold">Concepts</h1>
-
-      <div className="mt-10 space-y-10">
-        {concepts.map((concept: any) => (
-          <ContentCard
-            key={concept.id}
-            href={`/concepts/${concept.slug}`}
-            title={concept.title}
-            excerpt={concept.definition}
-          />
-        ))}
-      </div>
-    </main>
+    <ContentIndexPage<Concept>
+      title="Concepts"
+      items={concepts}
+      getHref={(concept) => `/concepts/${concept.slug}`}
+      getTitle={(concept) => concept.title}
+      getExcerpt={(concept) => concept.definition}
+    />
   );
 }

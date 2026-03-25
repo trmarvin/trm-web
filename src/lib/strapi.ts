@@ -1,4 +1,7 @@
 // src/lib/strapi.ts
+
+import { Essay, Note, BookPost, Thinker, Concept, Hub } from "@/types/content";
+
 const RAW = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
 const STRAPI_URL = RAW.trim().replace(/^"|"$/g, "").replace(/\/$/, "");
 
@@ -20,74 +23,45 @@ export async function strapiFetch(path: string) {
   return res.json();
 }
 
-export async function getEssays() {
-  const json = await strapiFetch(`/essays?sort[0]=publishedAt:desc&populate=*`);
+export async function getCollection(collection: string) {
+  const json = await strapiFetch(`/${collection}?sort[0]=publishedAt:desc`);
   return json.data ?? [];
 }
 
-export async function getEssayBySlug(slug: string) {
+export async function getCollectionItemBySlug(
+  collection: string,
+  slug: string,
+) {
   const json = await strapiFetch(
-    `/essays?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`,
+    `/${collection}?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`,
   );
   return json.data?.[0] ?? null;
 }
 
-export async function getNotes() {
-  const json = await strapiFetch(`/notes?sort[0]=publishedAt:desc`);
-  return json.data ?? [];
-}
+export const getEssays = () => getCollection("essays");
+export const getEssayBySlug = (slug: string) =>
+  getCollectionItemBySlug("essays", slug);
 
-export async function getNoteBySlug(slug: string) {
-  const json = await strapiFetch(
-    `/notes?filters[slug][$eq]=${encodeURIComponent(slug)}`,
-  );
-  return json.data?.[0] ?? null;
-}
+export const getNotes = () => getCollection("notes");
+export const getNoteBySlug = (slug: string) =>
+  getCollectionItemBySlug("notes", slug);
 
-export async function getBooks() {
-  const json = await strapiFetch(`/books?sort[0]=publishedAt:desc`);
-  return json.data ?? [];
-}
+export const getBooks = () => getCollection("books");
+export const getBookBySlug = (slug: string) =>
+  getCollectionItemBySlug("books", slug);
 
-export async function getBookBySlug(slug: string) {
-  const json = await strapiFetch(
-    `/books?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`,
-  );
-  return json.data?.[0] ?? null;
-}
+export const getResources = () => getCollection("resources");
+export const getResourceBySlug = (slug: string) =>
+  getCollectionItemBySlug("resources", slug);
 
-export async function getConcepts() {
-  const json = await strapiFetch(`/concepts?sort[0]=publishedAt:desc`);
-  return json.data ?? [];
-}
+export const getHubs = () => getCollection("hubs");
+export const getHubBySlug = (slug: string) =>
+  getCollectionItemBySlug("hubs", slug);
 
-export async function getConceptBySlug(slug: string) {
-  const json = await strapiFetch(
-    `/concepts?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`,
-  );
-  return json.data?.[0] ?? null;
-}
+export const getThinkers = () => getCollection("thinkers");
+export const getThinkerBySlug = (slug: string) =>
+  getCollectionItemBySlug("thinkers", slug);
 
-export async function getHubs() {
-  const json = await strapiFetch(`/hubs?sort[0]=publishedAt:desc`);
-  return json.data ?? [];
-}
-
-export async function getHubBySlug(slug: string) {
-  const json = await strapiFetch(
-    `/hubs?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`,
-  );
-  return json.data?.[0] ?? null;
-}
-
-export async function getThinkers() {
-  const json = await strapiFetch(`/thinkers?sort[0]=publishedAt:desc`);
-  return json.data ?? [];
-}
-
-export async function getThinkerBySlug(slug: string) {
-  const json = await strapiFetch(
-    `/thinkers?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`,
-  );
-  return json.data?.[0] ?? null;
-}
+export const getConcepts = () => getCollection("concepts");
+export const getConceptBySlug = (slug: string) =>
+  getCollectionItemBySlug("concepts", slug);

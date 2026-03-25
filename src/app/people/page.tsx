@@ -1,4 +1,4 @@
-// app/about/page.tsx
+// app/people/page.tsx
 
 import { notFound } from "next/navigation";
 

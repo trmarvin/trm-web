@@ -1,7 +1,7 @@
 // src/components/navigation/Breadcrumbs.tsx
 
 import Link from "next/link";
-import type { BreadcrumbItem } from "./types";
+import type { BreadcrumbItem } from "@/components/types";
 
 type BreadcrumbsProps = {
   items: BreadcrumbItem[];

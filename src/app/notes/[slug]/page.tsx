@@ -1,27 +1,6 @@
 import { notFound } from "next/navigation";
-import { strapiFetch } from "@/lib/strapi";
-import { Blocks } from "@/components/blocks/Blocks";
-
-type Note = {
-  id: number;
-  title: string;
-  slug: string;
-  excerpt?: any;
-  body?: any[];
-};
-
-function blocksToPlainText(blocks: any): string {
-  if (!Array.isArray(blocks)) return "";
-
-  return blocks
-    .map((block) =>
-      Array.isArray(block.children)
-        ? block.children.map((child: any) => child.text || "").join("")
-        : "",
-    )
-    .join(" ")
-    .trim();
-}
+import { SingleContentPage } from "@/components/pages/SingleContentPage";
+import { getNoteBySlug } from "@/lib/strapi";
 
 export default async function NotePage({
   params,
@@ -29,33 +8,15 @@ export default async function NotePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const note = await getNoteBySlug(slug);
 
-  const json = await strapiFetch(
-    `/notes?filters[slug][$eq]=${encodeURIComponent(slug)}&populate=*`,
-  );
-
-  const note: Note | undefined = json.data?.[0];
-
-  if (!note) {
-    notFound();
-  }
-
-  const excerptText =
-    typeof note.excerpt === "string"
-      ? note.excerpt
-      : blocksToPlainText(note.excerpt);
+  if (!note) notFound();
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <h1 className="mb-3 text-3xl font-semibold">{note.title}</h1>
-
-      {excerptText ? (
-        <p className="mb-10 text-lg opacity-80">{excerptText}</p>
-      ) : null}
-
-      <article className="prose max-w-none">
-        <Blocks blocks={note.body ?? []} />
-      </article>
-    </main>
+    <SingleContentPage
+      title={note.title}
+      summary={note.excerpt}
+      blocks={note.body ?? []}
+    />
   );
 }

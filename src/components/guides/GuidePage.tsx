@@ -1,7 +1,7 @@
 // src/components/guides/GuidePage.tsx
 
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
-import type { BreadcrumbItem } from "@/components/navigation/types";
+import type { BreadcrumbItem } from "@/components/types";
 import { GuideBody } from "@/components/guides/GuideBody";
 
 type GuidePageProps = {

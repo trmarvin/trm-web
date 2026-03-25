@@ -1,29 +1,31 @@
-import { getNotes } from "@/lib/strapi";
-import { ContentCard } from "@/components/lists/ContentCard";
+import { ContentCard } from "@/components/content/ContentCard";
 
-type Note = {
-  id: number;
-  slug: string;
+type ContentIndexPageProps<T extends { id: number }> = {
   title: string;
-  excerpt?: string;
+  items: T[];
+  getHref: (item: T) => string;
+  getTitle: (item: T) => string;
+  getExcerpt?: (item: T) => string | null | undefined;
 };
 
-const notes: Note[] = await getNotes();
-
-export default async function NotesPage() {
-  const notes = await getNotes();
-
+export function ContentIndexPage<T extends { id: number }>({
+  title,
+  items,
+  getHref,
+  getTitle,
+  getExcerpt,
+}: ContentIndexPageProps<T>) {
   return (
     <main className="mx-auto max-w-5xl px-6 py-16">
-      <h1 className="text-4xl font-semibold">Notes</h1>
+      <h1 className="text-4xl font-semibold">{title}</h1>
 
       <div className="mt-10 space-y-10">
-        {notes.map((note: any) => (
+        {items.map((item) => (
           <ContentCard
-            key={note.id}
-            href={`/notes/${note.slug}`}
-            title={note.title}
-            excerpt=""
+            key={item.id}
+            href={getHref(item)}
+            title={getTitle(item)}
+            excerpt={getExcerpt ? (getExcerpt(item) ?? "") : ""}
           />
         ))}
       </div>
