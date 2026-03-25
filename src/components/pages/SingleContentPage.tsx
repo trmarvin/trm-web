@@ -1,20 +1,15 @@
 import { ReactNode } from "react";
-import Container from "@/components/site/Container";
 import PageFrame from "@/components/site/PageFrame";
 import { Breadcrumbs } from "@/components/content/Breadcrumbs";
 import Eyebrow from "@/components/content/Eyebrow";
 import PageTitle from "@/components/content/PageTitle";
-
-type Crumb = {
-  href: string;
-  label: string;
-};
+import type { BreadcrumbItem } from "@/components/types/ui";
 
 type SingleContentPageProps = {
   title: string;
   eyebrow?: string;
   description?: string;
-  breadcrumbs?: Crumb[];
+  breadcrumbs?: BreadcrumbItem[];
   meta?: ReactNode;
   body: ReactNode;
   rail?: ReactNode;
@@ -39,11 +34,13 @@ export default function SingleContentPage({
         <header className="space-y-4">
           {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
           <PageTitle>{title}</PageTitle>
+
           {description ? (
             <p className="max-w-2xl text-lg leading-8 text-neutral-700">
               {description}
             </p>
           ) : null}
+
           {meta ? meta : null}
         </header>
 

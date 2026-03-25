@@ -1,6 +1,6 @@
-// app/about/page.tsx
-
 import { notFound } from "next/navigation";
+import SingleContentPage from "@/components/pages/SingleContentPage";
+import Prose from "@/components/content/Prose";
 
 const STRAPI_URL = process.env.STRAPI_URL;
 const STRAPI_TOKEN = process.env.STRAPI_TOKEN;
@@ -31,8 +31,14 @@ export default async function AboutPage() {
   if (!page) notFound();
 
   return (
-    <main>
-      <h1>{page.title}</h1>
-    </main>
+    <SingleContentPage
+      eyebrow="About"
+      title={page.title}
+      body={
+        <Prose>
+          <p>About page body goes here.</p>
+        </Prose>
+      }
+    />
   );
 }
