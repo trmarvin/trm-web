@@ -20,7 +20,7 @@ export function GuideBody({ blocks }: GuideBodyProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="sefaria-link-target space-y-6">
       {blocks.map((block, index) => {
         const key = block.id ?? `${block.__component}-${index}`;
 
