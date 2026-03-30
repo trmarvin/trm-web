@@ -10,7 +10,7 @@ export default function PageTitle({ children, className }: PageTitleProps) {
   return (
     <h1
       className={clsx(
-        "text-4xl font-semibold tracking-tight sm:text-5xl",
+        "text-5xl font-semibold tracking-tight text-neutral-950",
         className,
       )}
     >

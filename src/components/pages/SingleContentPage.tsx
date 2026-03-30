@@ -26,7 +26,7 @@ export default function SingleContentPage({
 }: SingleContentPageProps) {
   return (
     <PageFrame rail={rail}>
-      <div className="space-y-8">
+      <div className="space-y-10">
         {breadcrumbs && breadcrumbs.length > 0 ? (
           <Breadcrumbs items={breadcrumbs} />
         ) : null}

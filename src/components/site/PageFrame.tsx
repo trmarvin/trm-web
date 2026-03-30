@@ -15,16 +15,14 @@ export default function PageFrame({
 }: PageFrameProps) {
   return (
     <Container className={clsx("py-10 lg:py-14", className)}>
-      <div
-        className={clsx(
-          "grid grid-cols-1 gap-10",
-          rail && "lg:grid-cols-[minmax(0,1fr)_280px]",
-        )}
-      >
-        <main className="min-w-0">{children}</main>
-
-        {rail ? <aside className="hidden lg:block">{rail}</aside> : null}
-      </div>
+      {rail ? (
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
+          <main className="min-w-0 max-w-3xl">{children}</main>
+          <aside className="hidden lg:block">{rail}</aside>
+        </div>
+      ) : (
+        <main className="min-w-0 max-w-3xl">{children}</main>
+      )}
     </Container>
   );
 }

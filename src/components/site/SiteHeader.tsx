@@ -1,21 +1,25 @@
 import Link from "next/link";
+import Image from "next/image";
+import Container from "@/components/site/Container";
+import PrimaryNav from "@/components/site/PrimaryNav";
 
-export function SiteHeader() {
+export default function SiteHeader() {
   return (
-    <header className="border-b border-neutral-200">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-lg font-semibold">
-          Tamar Marvin
+    <header className="border-b border-neutral-200 bg-white/80 backdrop-blur">
+      <Container className="flex items-center justify-between py-5">
+        <Link href="/" aria-label="Tamar Marvin home" className="shrink-0">
+          <Image
+            src="/logo-wordmark.png"
+            alt="Tamar Marvin"
+            width={260}
+            height={90}
+            priority
+            className="h-auto w-auto max-h-18"
+          />
         </Link>
 
-        <nav className="flex gap-6 text-sm">
-          <Link href="/texts">Texts</Link>
-          <Link href="/ideas">Ideas</Link>
-          <Link href="/people">People</Link>
-          <Link href="/history">History</Link>
-          <Link href="/about">About</Link>
-        </nav>
-      </div>
+        <PrimaryNav />
+      </Container>
     </header>
   );
 }
